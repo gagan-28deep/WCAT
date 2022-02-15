@@ -22,13 +22,30 @@ for (let i = 0; i < inputArr.length; i++) {
     filesArr.push(inputArr[i]);
   }
 }
-console.log(filesArr);
-console.log(optionArr);
+// console.log(filesArr);
+// console.log(optionArr);
+
+//   Check
+
+let isBothPresent = optionArr.includes("-b") && optionArr.includes("-n");
+if (isBothPresent) {
+  console.log("Please choose only one of b or n");
+  return;
+}
+
+// Existence
+for (let i = 0; i < filesArr.length; i++) {
+  let isFilePresent = fs.existsSync(filesArr[i]);
+  if (isFilePresent == false) {
+    console.log(`file ${filesArr[i]} is not present`);
+    return;
+  }
+}
 
 //  Read file data
 let content = "";
-for (let i = 0; i < inputArr.length; i++) {
-  let buffer = fs.readFileSync(inputArr[i]);
+for (let i = 0; i < filesArr.length; i++) {
+  let buffer = fs.readFileSync(filesArr[i]);
   content += buffer + "\r\n"; // Buffer -> String
 }
 // console.log(content);
@@ -39,8 +56,8 @@ let contentArr = content.split("\r\n");
 // Logic
 
 //  -s
-let issPresent = optionArr.includes("-s");
-if (issPresent == true) {
+let isSPresent = optionArr.includes("-s");
+if (isSPresent == true) {
   for (let i = 1; i < contentArr.length; i++) {
     if (contentArr[i] == "" && contentArr[i - 1] == "") {
       //  Make it null
@@ -52,20 +69,33 @@ if (issPresent == true) {
   }
   let tempArr = [];
   for (let i = 0; i < contentArr.length; i++) {
-    if (contentArr[i] !== null) {
+    if (contentArr[i] != null) {
       tempArr.push(contentArr[i]);
     }
   }
   //   copy data from tempArr to original array  : content -> original
   contentArr = tempArr;
 }
-console.log(contentArr.join("\n"));
+// console.log(contentArr.join("\n"));
 
 //  -n
-// let isnPresent = optionArr.includes("-n");
-// if (isnPresent == true) {
-//   for (let i = 0; i < contentArr.length; i++) {
-//     contentArr[i] = `${i + 1}. ${contentArr[i]}`;
-//   }
-//   console.log(contentArr.join("\n"));
-// }
+let isNPresent = optionArr.includes("-n");
+if (isNPresent == true) {
+  for (let i = 0; i < contentArr.length; i++) {
+    contentArr[i] = `${i + 1}. ${contentArr[i]}`;
+  }
+  // console.log(contentArr.join("\n"));
+}
+
+// -b;
+let isBPresent = optionArr.includes("-b");
+if (isBPresent == true) {
+  let counter = 1;
+  for (let i = 0; i < contentArr.length; i++) {
+    if (contentArr[i] != "") {
+      contentArr[i] = `${counter} ${contentArr[i]}`;
+      counter++;
+    }
+  }
+}
+console.log(contentArr.join("\n"));
